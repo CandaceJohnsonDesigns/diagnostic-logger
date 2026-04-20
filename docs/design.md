@@ -70,7 +70,7 @@ head - tail <= LOG_CAPACITY;
 ```
 This invariant ensures that the buffer does not exceed its fixed capacity.
 
-Equivalently:o I need to updateoIneedtoupdate
+Equivalently:
 
 ```c
 count <= LOG_CAPACITY;
