@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef LOGGER_H
     #define LOGGER_H
 
@@ -17,9 +19,9 @@
     } LoggerStatus;
 
     typedef struct {
-        __UINT32_TYPE__ timestamp;
+        uint32_t timestamp;
         LogLevel level;
         char message[LOG_MESSAGE_MAX];
     } LogEntry;
-    
+
 #endif // LOGGER_H
