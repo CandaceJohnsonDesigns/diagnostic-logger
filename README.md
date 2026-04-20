@@ -143,7 +143,8 @@ The test harness validates:
 
 Detailed documentation is available in the `docs/` directory:
 
-*
+* `docs/design.md` — internal design decisions and structure
+* 
 
 ---
 
