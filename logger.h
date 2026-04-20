@@ -41,7 +41,7 @@
 
     LoggerStatus loggerLog(
         Logger *logger, 
-        uint16_t timestamp, 
+        uint32_t timestamp, 
         LogLevel level, 
         const char *message
     );
