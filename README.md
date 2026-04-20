@@ -103,7 +103,7 @@ docs/             Detailed documentation
 ### Initialization
 
 ```c
-logger_t logger;
+Logger logger;
 logger_init(&logger);
 ```
 
@@ -116,7 +116,7 @@ logger_log(&logger, timestamp, LOG_INFO, "System started");
 ### Retrieve Entry
 
 ```c
-log_entry_t entry;
+LogEntry entry;
 if (logger_get_entry(&logger, index, &entry) == LOGGER_OK) {
     // use entry
 } else {
