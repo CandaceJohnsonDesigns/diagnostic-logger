@@ -1,11 +1,12 @@
-#include <stdint.h>
-#include <stddef.h>
-
 #ifndef LOGGER_H
     #define LOGGER_H
 
+    #include <stdint.h>
+    #include <stddef.h>
+
     #define LOGGER_MESSAGE_MAX 64
     #define LOGGER_CAPACITY 16
+    
 
     // Type Definitions
 
