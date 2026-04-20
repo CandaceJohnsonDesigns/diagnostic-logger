@@ -8,6 +8,18 @@ It is intended for developers modifying or extending the module.
 
 ---
 
+## Table of Contents
+
+* [Data Structures](#data-structures)
+* [Logical and Physical Indexing](#logical-and-physical-indexing)
+* [Buffer State and Invariants](#buffer-state-and-invariants)
+* [Write Operation](#write-operation)
+* [Read Operation](#read-operation)
+* [String Handling](#string-handling)
+* [Error Handling](#error-handling)
+* [Implementation Constraints](#implementation-constraints)
+* [Known Risks](#known-risks)
+
 ## Data Structures
 
 ### `log_entry_t`
