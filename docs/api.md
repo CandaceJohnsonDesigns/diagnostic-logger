@@ -127,4 +127,82 @@ Adds a log entry.
 
 ---
 
-  
+### `logger_get_entry`
+
+```c
+logger_status_t logger_get_entry(
+  const logger_t *logger,
+  size_t index,
+  log_entry_t *out_entry
+);
+```
+
+Retrieves a log entry by logical index.
+
+**Parameters:**
+
+* `logger` — logger instance
+* `index` — logical index relative to the oldest entry
+* `out_entry` — output buffer
+
+**Returns:**
+
+* `LOGGER_OK` on success
+* `LOGGER_ERR_NULL` if `logger` or `out_entry` is `NULL`
+* `LOGGER_ERR_INVALID_INDEX` if `index` is out of range
+
+**Index Semantics:**
+
+* `index = 0` → oldest entry
+* `index = logger_count(...) - 1` → newest entry
+
+**Notes:**
+
+* `index` refers to a logical position, not a physical array index
+
+---
+
+### `logger_count`
+
+```c
+size_t logger_count(const logger_t *logger);
+```
+
+Returns the number of stored entries.
+
+**Parameters:**
+
+* `logger` — logger instance
+
+**Returns:**
+
+* Number of valid entries
+* Returns `0` of `logger` is `NULL`
+
+**Behavior:**
+
+* Count is derived from internal state (`head - tail`)
+* Does not modify logger state
+
+---
+
+### `logger_clear`
+
+```c
+void logger_clear(logger_t *logger);
+```
+
+Clears all stored entries.
+
+**Parameters:**
+
+* `logger` — logger instance
+
+**Behaviors:**
+
+* Resets `head` and `tail`
+* Effectively removes all entries
+
+**Notes:**
+
+* Behavior is undefined if `logger` is `NULL`
