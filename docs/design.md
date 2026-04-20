@@ -22,21 +22,21 @@ It is intended for developers modifying or extending the module.
 
 ## Data Structures
 
-### `log_entry_t`
+### `LogEntry`
 
 Represents a single log entry.
 
 * `uint32_t timestamp` — caller-provided value
-* `log_level_t level` — severity level
+* `LogLevel level` — severity level
 * `char message[LOG_MESSAGE_MAX]` — fixed-size message buffer
 
 ---
 
-### `logger_t`
+### `Logger`
 
 Maintains the internal state of the logger.
 
-* `log_entry_t entries[LOG_CAPACITY]` — fixed-size storage
+* `LogEntry entries[LOG_CAPACITY]` — fixed-size storage
 * `size_t head` — free-running logical write counter
 * `size_t tail` — free-running logical read counter (oldest entry)
 
@@ -144,7 +144,7 @@ This guarantees:
 
 ## Error Handling
 
-The API returns a `logger_status_t` value.
+The API returns a `LoggerStatus` value.
 
 ### Validation
 
