@@ -167,8 +167,8 @@ Functions validate:
 * No dynamic memory allocation
 * Single-threaded usage
 * Buffer capacity must be power of two (for efficient index masking)
-* Logical counters (`head`, `tail`) use unsigned integer wraparound semantics.
-* Counter type must be wide enough that `head - tail` remains unambiguous (capacity << counter range)
+* Logical counters (`head`, `tail`) use unsigned integer wraparound semantics
+* Counter type must satisfy: `capacity < (max_value_of_counter / 2)` to ensure modular subtraction remains unabiguous
 * Invariant must always hold: `head - tail <= capacity`
 
 ---
@@ -177,7 +177,7 @@ Functions validate:
 
 * Off-by-one errors in index validation
 * Misinterpreting logical counters as physical indices
-* Breaking the invariant `head - tail <= LOG_CAPACITY`
+* Breaking the invariant `head - tail <= LOGGER_CAPACITY`
 * Misconfiguring buffer size (non-power-of-two)
 * Unsafe string handling if constraints are violated
 * Ambiguous or inconsistent error handling
