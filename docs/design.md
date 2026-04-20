@@ -80,3 +80,38 @@ Violating this invariant results in undefined behavior.
 
 ---
 
+## Write Operation
+
+When adding a log entry:
+
+1. If the buffer is full, increment `tail` to discard the oldest entry
+2. Compute the physical index from `head`
+3. Write the entry into the buffer
+4. Increment `head`
+
+This ensures:
+
+* constant-time insertion
+* overwrite-on-full behavior
+* preservation of ordering
+
+---
+
+## Read Operation
+
+To retrieve an entry:
+
+1. Compute `count = head - tail`
+2. Validate that the requested logical index (`index`) is less than `count`
+3. Compute logical position: `tail + index`
+4. Convert to physical index using bit masking
+5. Return the entry
+
+### Index Mapping
+
+The `index` parameter represents the logical position relative to the oldest entry:
+
+* `index = 0` → oldest entry
+* `index = count - 1` → newest entry
+
+---
