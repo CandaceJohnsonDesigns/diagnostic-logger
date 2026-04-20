@@ -50,7 +50,7 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 ### Capacity Handling
 
 * Buffer fills to `LOGGER_CAPACITY`
-* `loggerCount()` returns correct values
+* `loggerGetCount()` returns correct values
 * No overflow occurs
 
 ---
@@ -84,7 +84,7 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 
 ### Count Validation
 
-* `loggerCount()` returns:
+* `loggerGetCount()` returns:
   * `0` after initialization
   * correct value after inserts
   * capped value at full capacity

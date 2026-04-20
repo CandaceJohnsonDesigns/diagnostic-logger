@@ -28,7 +28,7 @@ Represents a single log entry.
 
 * `uint32_t timestamp` — caller-provided value
 * `LogLevel level` — severity level
-* `char message[LOG_MESSAGE_MAX]` — fixed-size message buffer
+* `char message[LOGGER_MESSAGE_MAX]` — fixed-size message buffer
 
 ---
 
@@ -36,7 +36,7 @@ Represents a single log entry.
 
 Maintains the internal state of the logger.
 
-* `LogEntry entries[LOG_CAPACITY]` — fixed-size storage
+* `LogEntry entries[LOGGER_CAPACITY]` — fixed-size storage
 * `size_t head` — free-running logical write counter
 * `size_t tail` — free-running logical read counter (oldest entry)
 
@@ -50,10 +50,10 @@ These counters are not bounded by the buffer size.
 To access the underlying array, logical positions are converted into physical indices:
 
 ```c
-physical_index = logical_index & (LOG_CAPACITY - 1);
+physical_index = logical_index & (LOGGER_CAPACITY - 1);
 ```
 
-This requires `LOG_CAPACITY` to be a power of two.
+This requires `LOGGER_CAPACITY` to be a power of two.
 
 ---
 
@@ -70,8 +70,8 @@ count = head - tail;
 ### Valid States
 
 * Empty: `head == tail`
-* Full: `count == LOG_CAPACITY`
-* Partially filled: `0 < count < LOG_CAPACITY`
+* Full: `count == LOGGER_CAPACITY`
+* Partially filled: `0 < count < LOGGER_CAPACITY`
 
 ### Invariant
 
@@ -130,7 +130,7 @@ The `index` parameter represents the logical position relative to the oldest ent
 
 ## String Handling
 
-* Copy at most `LOG_MESSAGE_MAX - 1` characters from the input
+* Copy at most `LOGGER_MESSAGE_MAX - 1` characters from the input
 * Explicitly set the last byte to `'\0'`
 * Truncate input if it exceeds buffer capacity
 
@@ -166,7 +166,7 @@ Functions validate:
 
 * No dynamic memory allocation
 * Single-threaded usage
-* `LOG_CAPACITY` must be power of two
+* `LOGGER_CAPACITY` must be power of two
 * `size_t` wraparound is assumed to be well-defined
 
 ---

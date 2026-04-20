@@ -162,10 +162,10 @@ Retrieves a log entry by logical index.
 
 ---
 
-### `loggerCount`
+### `loggerGetCount`
 
 ```c
-size_t loggerCount(const Logger *logger);
+size_t loggerGetCount(const Logger *logger);
 ```
 
 Returns the number of stored entries.
