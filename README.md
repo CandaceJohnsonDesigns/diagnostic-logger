@@ -54,9 +54,7 @@ The logger is implemented using a fixed-size circular buffer.
 
 * **Head (write position):** Free-running logical counter for the next write
 * **Tail (read position):** Free-running logical counter for the oldest entry
-* **Logical vs Physical Indexing:**
-  * Logical positions track ordering
-  * Physical indices are derived using bit masking
+* **Logical vs Physical Indexing:** Logical positions are mapped to the underlying buffer using efficient index wrapping (see [design documentation](docs/design.md#logical-and-physical-indexing) for details)
 
 ### Indexing Strategy
 
@@ -75,6 +73,8 @@ count = head - tail;
 The buffer is:
 * **Empty:** `head == tail`
 * **Full:** `count == LOG_CAPACITY`
+
+For detailed implementation and invariants, see [docs/design.md](docs/design.md).
 
 ---
 
