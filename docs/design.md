@@ -37,8 +37,8 @@ Represents a single log entry.
 Maintains the internal state of the logger.
 
 * `LogEntry entries[LOGGER_CAPACITY]` — fixed-size storage
-* `size_t head` — free-running logical write counter
-* `size_t tail` — free-running logical read counter (oldest entry)
+* `uint32_t head` — free-running logical write counter
+* `uint32_t tail` — free-running logical read counter (oldest entry)
 
 ---
 
@@ -152,7 +152,7 @@ Functions validate:
 
 * `logger` pointer
 * `message` pointer (for write)
-* `out_entry` pointer (for read)
+* `outEntry` pointer (for read)
 * index bounds
 
 ### Non-validated Inputs
@@ -166,8 +166,10 @@ Functions validate:
 
 * No dynamic memory allocation
 * Single-threaded usage
-* `LOGGER_CAPACITY` must be power of two
-* `size_t` wraparound is assumed to be well-defined
+* Buffer capacity must be power of two (for efficient index masking)
+* Logical counters (`head`, `tail`) use unsigned integer wraparound semantics.
+* Counter type must be wide enough that `head - tail` remains unambiguous (capacity << counter range)
+* Invariant must always hold: `head - tail <= capacity`
 
 ---
 

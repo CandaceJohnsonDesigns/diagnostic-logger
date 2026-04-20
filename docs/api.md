@@ -47,7 +47,7 @@ Represents a single log entry.
 typedef struct {
   uint32_t timestamp;
   LogLevel level;
-  char message[LOG_MESSAGE_MAX];
+  char message[LOGGER_MESSAGE_MAX];
 } LogEntry;
 ```
 
@@ -59,9 +59,9 @@ Represents the logger state.
 
 ```c
 typedef struct {
-  LogEntry entries[LOG_CAPACITY];
-  size_t head;
-  size_t tail;
+  LogEntry entries[LOGGER_CAPACITY];
+  uint32_t head;
+  uint32_t tail;
 } Logger;
 ```
 
@@ -189,7 +189,7 @@ Returns the number of stored entries.
 ### `loggerClear`
 
 ```c
-void logger_clear(Logger *logger);
+void loggerClear(Logger *logger);
 ```
 
 Clears all stored entries.
