@@ -115,3 +115,55 @@ The `index` parameter represents the logical position relative to the oldest ent
 * `index = count - 1` → newest entry
 
 ---
+
+## String Handling
+
+* Copy at most `LOG_MESSAGE_MAX - 1` characters from the input
+* Explicitly set the last byte to `'\0'`
+* Truncate input if it exceeds buffer capacity
+
+This guarantees:
+
+* no buffer overflow
+* valid null-terminated strings
+* deterministic memory usage
+
+---
+
+## Error Handling
+
+The API returns a `logger_status_t` value.
+
+### Validation
+
+Functions validate:
+
+* `logger` pointer
+* `message` pointer (for write)
+* `out_entry` pointer (for read)
+* index bounds
+
+### Non-validated Inputs
+
+* Timestamp values are accepted without validation
+* Message content is not interpreted
+
+---
+
+## Implementation Constraints
+
+* No dynamic memory allocation
+* Single-threaded usage
+* `LOG_CAPACITY` must be power of two
+* `size_t` wraparound is assumed to be well-defined
+
+---
+
+## Known Risks
+
+* Off-by-one errors in index validation
+* Misinterpreting logical counters as physical indices
+* Breaking the invariant `head - tail <= LOG_CAPACITY`
+* Misconfiguring buffer size (non-power-of-two)
+* Unsafe string handling if constraints are violated
+* Ambiguous or inconsistent error handling
