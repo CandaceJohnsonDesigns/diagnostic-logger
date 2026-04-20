@@ -49,8 +49,8 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 
 ### Capacity Handling
 
-* Buffer fills to `LOG_CAPACITY`
-* `logger_count()` returns correct values
+* Buffer fills to `LOGGER_CAPACITY`
+* `loggerCount()` returns correct values
 * No overflow occurs
 
 ---
@@ -84,11 +84,11 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 
 ### Count Validation
 
-* `logger_count()` returns:
+* `loggerCount()` returns:
   * `0` after initialization
   * correct value after inserts
   * capped value at full capacity
-* Count remains bounded by `LOG_CAPACITY`
+* Count remains bounded by `LOGGER_CAPACITY`
 
 ---
 
@@ -117,7 +117,7 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 Tests should verify that the following condition is always maintained:
 
 ```c
-head - tail <= LOG_CAPACITY;
+head - tail <= LOGGER_CAPACITY;
 ```
 Violations indicate incorrect buffer management.
 

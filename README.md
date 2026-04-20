@@ -61,7 +61,7 @@ The logger is implemented using a fixed-size circular buffer.
 The buffer capacity must be a power of two:
 
 ```c
-physical_index = logical_index & (LOG_CAPACITY - 1);
+physical_index = logical_index & (LOGGER_CAPACITY - 1);
 ```
 
 ### Entry Count
@@ -72,7 +72,7 @@ count = head - tail;
 
 The buffer is:
 * **Empty:** `head == tail`
-* **Full:** `count == LOG_CAPACITY`
+* **Full:** `count == LOGGER_CAPACITY`
 
 For detailed implementation and invariants, see [docs/design.md](docs/design.md).
 
@@ -104,20 +104,20 @@ docs/             Detailed documentation
 
 ```c
 Logger logger;
-logger_init(&logger);
+loggerInit(&logger);
 ```
 
 ### Add log entry
 
 ```c
-logger_log(&logger, timestamp, LOG_INFO, "System started");
+loggerAppend(&logger, timestamp, LOG_LEVEL_INFO, "System started");
 ```
 
 ### Retrieve Entry
 
 ```c
 LogEntry entry;
-if (logger_get_entry(&logger, index, &entry) == LOGGER_OK) {
+if (loggerGetEntry(&logger, index, &entry) == LOGGER_OK) {
     // use entry
 } else {
     // handle error

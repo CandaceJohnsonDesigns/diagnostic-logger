@@ -30,10 +30,10 @@ Represents the severity of a log entry.
 
 ```c
 typedef enum {
-  LOG_DEBUG,
-  LOG_INFO,
-  LOG_WARN,
-  LOG_ERROR
+  LOG_LEVEL_DEBUG,
+  LOG_LEVEL_INFO,
+  LOG_LEVEL_WARNING,
+  LOG_LEVEL_ERROR
 } LogLevel;
 ```
 
@@ -69,10 +69,10 @@ typedef struct {
 
 ## Functions
 
-### `logger_init`
+### `loggerInit`
 
 ```c
-void logger_init(Logger *logger);
+void loggerInit(Logger *logger);
 ```
 
 Initializes the logger state.
@@ -93,10 +93,10 @@ Initializes the logger state.
 
 ---
 
-### `logger_log`
+### `loggerAppend`
 
 ```c
-LoggerStatus logger_log(
+LoggerStatus loggerAppend(
   Logger *logger,
   uint32_t timestamp,
   LogLevel level,
@@ -127,10 +127,10 @@ Adds a log entry.
 
 ---
 
-### `logger_get_entry`
+### `loggerGetEntry`
 
 ```c
-LoggerStatus logger_get_entry(
+LoggerStatus loggerGetEntry(
   const Logger *logger,
   size_t index,
   LogEntry *out_entry
@@ -162,10 +162,10 @@ Retrieves a log entry by logical index.
 
 ---
 
-### `logger_count`
+### `loggerCount`
 
 ```c
-size_t logger_count(const Logger *logger);
+size_t loggerCount(const Logger *logger);
 ```
 
 Returns the number of stored entries.
@@ -186,7 +186,7 @@ Returns the number of stored entries.
 
 ---
 
-### `logger_clear`
+### `loggerClear`
 
 ```c
 void logger_clear(Logger *logger);

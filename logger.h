@@ -4,8 +4,8 @@
 #ifndef LOGGER_H
     #define LOGGER_H
 
-    #define LOG_MESSAGE_MAX 64
-    #define LOG_CAPACITY 16
+    #define LOGGER_MESSAGE_MAX 64
+    #define LOGGER_CAPACITY 16
 
     // Type Definitions
 
@@ -25,11 +25,11 @@
     typedef struct {
         uint32_t timestamp;
         LogLevel level;
-        char message[LOG_MESSAGE_MAX];
+        char message[LOGGER_MESSAGE_MAX];
     } LogEntry;
 
     typedef struct {
-        LogEntry entries[LOG_CAPACITY];
+        LogEntry entries[LOGGER_CAPACITY];
         size_t head;
         size_t tail;
     } Logger;
@@ -39,7 +39,7 @@
 
     LoggerStatus loggerInit(Logger *logger);
 
-    LoggerStatus loggerLog(
+    LoggerStatus loggerAppend(
         Logger *logger, 
         uint32_t timestamp, 
         LogLevel level, 
@@ -49,7 +49,7 @@
     LoggerStatus loggerGetEntry(
         const Logger *logger, 
         size_t index, 
-        LogEntry *entry
+        LogEntry *outEntry
     );
 
     size_t loggerGetCount(const Logger *logger);
