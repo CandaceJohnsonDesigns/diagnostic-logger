@@ -4,13 +4,13 @@
 
 This document describes the public interface for the diagnostic logger module.
 
-All functions operate on a caller-provided `logger_t` instance and return a `logger_status_t` to indicate success or failure.
+All functions operate on a caller-provided `Logger` instance and return a `LoggerStatus` to indicate success or failure.
 
 ---
 
 ## Types
 
-### `logger_status_t`
+### `LoggerStatus`
 
 Represents the result of an API operation.
 
@@ -19,12 +19,12 @@ typedef enum {
   LOGGER_OK = 0,
   LOGGER_ERR_NULL,
   LOGGER_ERR_INVALID_INDEX
-} logger_status_t;
+} LoggerStatus;
 ```
 
 ---
 
-### `log_level_t`
+### `LogLevel`
 
 Represents the severity of a log entry.
 
@@ -34,35 +34,35 @@ typedef enum {
   LOG_INFO,
   LOG_WARN,
   LOG_ERROR
-} log_level_t;
+} LogLevel;
 ```
 
 ---
 
-### `log_entry_t`
+### `LogEntry`
 
 Represents a single log entry.
 
 ```c
 typedef struct {
   uint32_t timestamp;
-  log_level_t level;
+  LogLevel level;
   char message[LOG_MESSAGE_MAX];
-} log_entry_t;
+} LogEntry;
 ```
 
 ---
 
-### `logger_t`
+### `Logger`
 
 Represents the logger state.
 
 ```c
 typedef struct {
-  log_entry_t entries[LOG_CAPACITY];
+  LogEntry entries[LOG_CAPACITY];
   size_t head;
   size_t tail;
-} logger_t;
+} Logger;
 ```
 
 ---
@@ -72,7 +72,7 @@ typedef struct {
 ### `logger_init`
 
 ```c
-void logger_init(logger_t *logger);
+void logger_init(Logger *logger);
 ```
 
 Initializes the logger state.
@@ -96,10 +96,10 @@ Initializes the logger state.
 ### `logger_log`
 
 ```c
-logger_status_t logger_log(
-  logger_t *logger,
+LoggerStatus logger_log(
+  Logger *logger,
   uint32_t timestamp,
-  log_level_t level,
+  LogLevel level,
   const char *message
 );
 ```
@@ -130,10 +130,10 @@ Adds a log entry.
 ### `logger_get_entry`
 
 ```c
-logger_status_t logger_get_entry(
-  const logger_t *logger,
+LoggerStatus logger_get_entry(
+  const Logger *logger,
   size_t index,
-  log_entry_t *out_entry
+  LogEntry *out_entry
 );
 ```
 
@@ -165,7 +165,7 @@ Retrieves a log entry by logical index.
 ### `logger_count`
 
 ```c
-size_t logger_count(const logger_t *logger);
+size_t logger_count(const Logger *logger);
 ```
 
 Returns the number of stored entries.
@@ -189,7 +189,7 @@ Returns the number of stored entries.
 ### `logger_clear`
 
 ```c
-void logger_clear(logger_t *logger);
+void logger_clear(Logger *logger);
 ```
 
 Clears all stored entries.
