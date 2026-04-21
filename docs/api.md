@@ -87,7 +87,7 @@ Use the public logger API for all supported operations.
 ### `loggerInit`
 
 ```c
-void loggerInit(Logger *logger);
+LoggerStatus loggerInit(Logger *logger);
 ```
 
 Initializes the logger state.

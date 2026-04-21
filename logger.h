@@ -7,6 +7,10 @@
     #define LOGGER_MESSAGE_MAX 64U
     #define LOGGER_CAPACITY 16U
 
+    _Static_assert(LOGGER_CAPACITY > 0U, "LOGGER_CAPACITY must be greater than 0");
+    _Static_assert((LOGGER_CAPACITY & (LOGGER_CAPACITY - 1U)) == 0U,
+                "LOGGER_CAPACITY must be a power of two");
+
 
     // Type Definitions
 
@@ -22,7 +26,7 @@
         LOGGER_ERR_NULL_LOGGER,
         LOGGER_ERR_NULL_MESSAGE,
         LOGGER_ERR_NULL_ENTRY,
-        LOGGER_ERR_NULL_ENTRY,
+        LOGGER_ERR_NULL_COUNT,
         LOGGER_ERR_INVALID_INDEX,
         LOGGER_ERR_INVALID_LEVEL
     } LoggerStatus;
@@ -67,8 +71,8 @@
         LogEntry *outEntry
     );
 
-    size_t loggerGetCount(const Logger *logger);
+    LoggerStatus loggerGetCount(const Logger *logger);
 
-    void loggerClear(Logger *logger);
+    LoggerStatus loggerClear(Logger *logger);
 
 #endif // LOGGER_H
