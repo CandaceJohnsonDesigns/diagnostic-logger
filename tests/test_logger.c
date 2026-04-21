@@ -91,8 +91,8 @@ static void test_loggerInit_sets_empty_state(void) {
 
     ASSERT_EQUAL(LOGGER_OK, status);
 
-    ASSERT_EQUAL(0, logger.head);
-    ASSERT_EQUAL(0, logger.tail);
+    ASSERT_EQUAL(0U, logger.head);
+    ASSERT_EQUAL(0U, logger.tail);
 }
 
 /*********************************

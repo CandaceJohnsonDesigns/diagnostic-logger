@@ -10,14 +10,14 @@
 *   directly after initialization. All normal interaction with the logger
 *   must occur through the public API.
 */
-LoggerStatus loggerInit(Logger* logger) {
+LoggerStatus loggerInit(Logger *logger) {
     LoggerStatus status;
 
     if (logger == NULL) {
         status = LOGGER_ERR_NULL_LOGGER;
     } else {
-        logger->head = 0;
-        logger->tail = 0;
+        logger->head = 0U;
+        logger->tail = 0U;
 
         status = LOGGER_OK;
     }
