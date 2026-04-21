@@ -92,7 +92,7 @@ count = head - tail;
 The following condition must always be maintained:
 
 ```c
-head - tail <= LOG_CAPACITY;
+head - tail <= LOGGER_CAPACITY;
 ```
 This invariant ensures that the buffer does not exceed its fixed capacity.
 

@@ -103,12 +103,15 @@ Testing is performed using a simple C test harness and focuses on correctness, s
 
 ### Error Handling
 
-* `LOGGER_ERR_NULL` returned for:
-  * `NULL` logger
-  * `NULL` message (write)
-  * `NULL` output buffer (read)
+* `NULL` Errors:
+  * `LOGGER_ERR_NULL_LOGGER` returned for `NULL` logger
+  * `LOGGER_ERR_NULL_MESSAGE` returned for `NULL` message (write)
+  * `LOGGER_ERR_NULL_ENTRY` returned for `NULL` output buffer (read)
+  * `LOGGER_ERR_NULL_COUNT` returned for `NULL` output count (read)
 * `LOGGER_ERR_INVALID_INDEX` returned for:
   * index out of range
+* `LOGGER_ERR_INVALID_LEVEL` returned for:
+  * invalid log level
 
 ---
 

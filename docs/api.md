@@ -104,7 +104,6 @@ Initializes the logger state.
 **Notes:**
 
 * The caller must provide valid memory for `logger`
-* Behavior is undefined if `logger` is `NULL`
 
 ---
 
@@ -226,7 +225,3 @@ Clears all stored entries.
 
 * Resets `head` and `tail`
 * Effectively removes all entries
-
-**Notes:**
-
-* Behavior is undefined if `logger` is `NULL`

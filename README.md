@@ -91,10 +91,12 @@ For detailed implementation and invariants, see [docs/design.md](docs/design.md)
 ## File Structure
 
 ```
+main.c            
 logger.h          Public API and data structures
 logger.c          Implementation
 test_logger.c     Test harness
 docs/             Detailed documentation
+.gitignore        
 ```
 ---
 
@@ -144,7 +146,8 @@ The test harness validates:
 Detailed documentation is available in the `docs/` directory:
 
 * `docs/design.md` — internal design decisions and structure
-* 
+* `docs/api.md` — public interface for the logger module
+* `docs/testing.md` — testing approach
 
 ---
 
