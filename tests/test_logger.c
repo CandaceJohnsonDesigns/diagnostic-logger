@@ -95,6 +95,51 @@ static void test_loggerInit_sets_empty_state(void) {
     ASSERT_EQUAL(0U, logger.tail);
 }
 
+/*
+* Test that loggerGetCount:
+* - returns LOGGER_OK status
+* - sets the count pointer to 0 when called on an initialized logger
+*/
+static void test_loggerGetCount_after_init_returns_zero(void) {
+    Logger logger;
+    size_t count = 999U; // Initialize to a non-zero value to ensure it gets set by the function
+
+    loggerInit(&logger);
+
+    LoggerStatus status = loggerGetCount(&logger, &count);
+
+    ASSERT_EQUAL(LOGGER_OK, status);
+    ASSERT_EQUAL(0U, count);
+}
+
+/**
+* Test that loggerGetCount:
+* - returns LOGGER_ERR_NULL_LOGGER error when passed a NULL Logger pointer
+* - does not modify the count pointer value on error (i.e., it should remain unchanged)
+*/
+static void test_loggerGetCount_null_logger_returns_error(void) {
+    size_t count = 123U; // Initialize to a non-zero value to ensure it doesn't get modified on error
+
+    LoggerStatus status = loggerGetCount(NULL, &count);
+
+    ASSERT_EQUAL(LOGGER_ERR_NULL_LOGGER, status);
+    ASSERT_EQUAL(123U, count); // Ensure count is unchanged on error
+}
+
+/*
+* Test that loggerGetCount:
+* - returns LOGGER_ERR_NULL_COUNT error when passed a NULL count pointer
+*/
+static void test_loggerGetCount_null_count_returns_error(void) {
+    Logger logger;
+    
+    LoggerStatus initStatus = loggerInit(&logger);
+    ASSERT_EQUAL(LOGGER_OK, initStatus);
+
+    LoggerStatus countStatus = loggerGetCount(&logger, NULL);
+    ASSERT_EQUAL(LOGGER_ERR_NULL_COUNT, countStatus);
+}
+
 /*********************************
 * Main function to run all tests *
 **********************************/
@@ -102,6 +147,9 @@ static void test_loggerInit_sets_empty_state(void) {
 int main(void) {
     RUN_TEST(test_loggerInit_null_logger_returns_error);
     RUN_TEST(test_loggerInit_sets_empty_state);
+    RUN_TEST(test_loggerGetCount_after_init_returns_zero);
+    RUN_TEST(test_loggerGetCount_null_logger_returns_error);
+    RUN_TEST(test_loggerGetCount_null_count_returns_error);
 
     printf("\n"); // Add a newline for better readability of results
 
