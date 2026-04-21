@@ -99,7 +99,7 @@ This invariant ensures that the buffer does not exceed its fixed capacity.
 Equivalently:
 
 ```c
-count <= LOG_CAPACITY;
+count <= LOGGER_CAPACITY;
 ```
 
 Violating this invariant results in undefined behavior.
@@ -184,7 +184,7 @@ Functions validate:
 * Single-threaded usage
 * Buffer capacity must be power of two (for efficient index masking)
 * Logical counters (`head`, `tail`) use unsigned integer wraparound semantics
-* Counter type must satisfy: `capacity < (max_value_of_counter / 2)` to ensure modular subtraction remains unabiguous
+* Counter type must satisfy: `capacity < (max_value_of_counter / 2)` to ensure modular subtraction remains unambiguous
 * Invariant must always hold: `head - tail <= capacity`
 
 ---

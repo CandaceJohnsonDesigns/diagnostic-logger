@@ -148,7 +148,7 @@ Adds a log entry.
 LoggerStatus loggerGetEntry(
   const Logger *logger,
   size_t index,
-  LogEntry *out_entry
+  LogEntry *outEntry
 );
 ```
 
