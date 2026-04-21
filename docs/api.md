@@ -20,6 +20,7 @@ typedef enum {
   LOGGER_ERR_NULL_LOGGER,
   LOGGER_ERR_NULL_MESSAGE,
   LOGGER_ERR_NULL_ENTRY,
+  LOGGER_ERR_NULL_COUNT,
   LOGGER_ERR_INVALID_INDEX,
   LOGGER_ERR_INVALID_LEVEL
 } LoggerStatus;
@@ -181,7 +182,7 @@ Retrieves a log entry by logical index.
 ### `loggerGetCount`
 
 ```c
-size_t loggerGetCount(const Logger *logger);
+LoggerStatus loggerGetCount(const Logger *logger, size_t *outCount);
 ```
 
 Returns the number of stored entries.
@@ -189,11 +190,13 @@ Returns the number of stored entries.
 **Parameters:**
 
 * `logger` — logger instance
+* `outCount` — output count
 
 **Returns:**
 
-* Number of valid entries
-* Returns `0` of `logger` is `NULL`
+* `LOGGER_OK` on success
+* `LOGGER_ERR_NULL_LOGGER` if `logger` is `NULL`
+* `LOGGER_ERR_NULL_COUNT` if `outCount` is `NULL`
 
 **Behavior:**
 
@@ -205,7 +208,7 @@ Returns the number of stored entries.
 ### `loggerClear`
 
 ```c
-void loggerClear(Logger *logger);
+LoggerStatus loggerClear(Logger *logger);
 ```
 
 Clears all stored entries.
@@ -213,6 +216,11 @@ Clears all stored entries.
 **Parameters:**
 
 * `logger` — logger instance
+
+**Returns:**
+
+* `LOGGER_OK` on success
+* `LOGGER_ERR_NULL_LOGGER` if `logger` is `NULL`
 
 **Behaviors:**
 

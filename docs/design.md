@@ -167,6 +167,7 @@ Functions validate:
 * `logger` pointer
 * `message` pointer (for write)
 * `outEntry` pointer (for read)
+* `outCount` pointer (for read)
 * index bounds
 * invalid log level
 
