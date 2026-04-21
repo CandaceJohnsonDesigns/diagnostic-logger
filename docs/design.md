@@ -168,6 +168,7 @@ Functions validate:
 * `message` pointer (for write)
 * `outEntry` pointer (for read)
 * index bounds
+* invalid log level
 
 ### Non-validated Inputs
 

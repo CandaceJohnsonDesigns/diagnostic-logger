@@ -17,8 +17,11 @@ Represents the result of an API operation.
 ```c
 typedef enum {
   LOGGER_OK = 0,
-  LOGGER_ERR_NULL,
-  LOGGER_ERR_INVALID_INDEX
+  LOGGER_ERR_NULL_LOGGER,
+  LOGGER_ERR_NULL_MESSAGE,
+  LOGGER_ERR_NULL_ENTRY,
+  LOGGER_ERR_INVALID_INDEX,
+  LOGGER_ERR_INVALID_LEVEL
 } LoggerStatus;
 ```
 

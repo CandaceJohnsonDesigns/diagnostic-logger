@@ -4,8 +4,8 @@
     #include <stdint.h>
     #include <stddef.h>
 
-    #define LOGGER_MESSAGE_MAX 64
-    #define LOGGER_CAPACITY 16
+    #define LOGGER_MESSAGE_MAX 64U
+    #define LOGGER_CAPACITY 16U
 
 
     // Type Definitions
@@ -22,7 +22,8 @@
         LOGGER_ERR_NULL_LOGGER,
         LOGGER_ERR_NULL_MESSAGE,
         LOGGER_ERR_NULL_ENTRY,
-        LOGGER_ERR_INVALID_INDEX
+        LOGGER_ERR_INVALID_INDEX,
+        LOGGER_ERR_INVALID_LEVEL
     } LoggerStatus;
 
     typedef struct {
