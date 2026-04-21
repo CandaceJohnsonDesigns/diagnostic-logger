@@ -178,6 +178,18 @@ Functions validate:
 
 ---
 
+## Build and Run
+
+```bash
+cc -std=c11 -Wall -Wextra -Wpedantic -Werror \
+   logger.c tests/test_logger.c \
+   -o test_logger
+
+./test_logger
+```
+
+---
+
 ## Implementation Constraints
 
 * No dynamic memory allocation

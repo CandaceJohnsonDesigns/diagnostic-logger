@@ -79,3 +79,35 @@ static int testsFailed = 0;
 static void test_loggerInit_null_logger_returns_error(void) {
     ASSERT_EQUAL(LOGGER_ERR_NULL_LOGGER, loggerInit(NULL));
 }
+
+/*
+* Test that loggerInit:
+* - returns LOGGER_OK status
+* - initializes the Logger struct to an empty state (head and tail set to 0)
+*/
+static void test_loggerInit_sets_empty_state(void) {
+    Logger logger;
+    LoggerStatus status = loggerInit(&logger);
+
+    ASSERT_EQUAL(LOGGER_OK, status);
+
+    ASSERT_EQUAL(0, logger.head);
+    ASSERT_EQUAL(0, logger.tail);
+}
+
+/*********************************
+* Main function to run all tests *
+**********************************/
+
+int main(void) {
+    RUN_TEST(test_loggerInit_null_logger_returns_error);
+    RUN_TEST(test_loggerInit_sets_empty_state);
+
+    printf("\n"); // Add a newline for better readability of results
+
+    printf("Tests run: %d\n", testsRun);
+    printf("Tests failed: %d\n", testsFailed);
+
+    // Return non-zero exit code if any tests failed
+    return testsFailed ? 1 : 0;
+}
