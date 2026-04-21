@@ -64,6 +64,17 @@ typedef struct {
   uint32_t tail;
 } Logger;
 ```
+---
+
+## Logger Ownership and Access
+
+`Logger` is caller-owned and stored in caller-managed memory.
+
+The `Logger` structure is publicly defined to support simple deterministic allocation in
+embedded-style environments without dynamic memory allocation. Its members are internal
+implementation state and must not be modified directly after initialization.
+
+Use the public logger API for all supported operations.
 
 ---
 
@@ -116,7 +127,8 @@ Adds a log entry.
 **Returns:**
 
 * `LOGGER_OK` on success
-* `LOGGER_ERR_NULL` if `logger` or `message` is `NULL`
+* `LOGGER_ERR_NULL_LOGGER` if `logger` is `NULL`
+* `LOGGER_ERR_NULL_MESSAGE` if `message` is `NULL`
 
 **Behavior:**
 
@@ -148,7 +160,8 @@ Retrieves a log entry by logical index.
 **Returns:**
 
 * `LOGGER_OK` on success
-* `LOGGER_ERR_NULL` if `logger` or `out_entry` is `NULL`
+* `LOGGER_ERR_NULL_LOGGER` if `logger` is `NULL`
+* `LOGGER_ERR_NULL_ENTRY` if `out_entry` is `NULL`
 * `LOGGER_ERR_INVALID_INDEX` if `index` is out of range
 
 **Index Semantics:**

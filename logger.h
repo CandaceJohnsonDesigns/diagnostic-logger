@@ -6,7 +6,7 @@
 
     #define LOGGER_MESSAGE_MAX 64
     #define LOGGER_CAPACITY 16
-    
+
 
     // Type Definitions
 
@@ -19,7 +19,9 @@
 
     typedef enum {
         LOGGER_OK = 0,
-        LOGGER_ERR_NULL,
+        LOGGER_ERR_NULL_LOGGER,
+        LOGGER_ERR_NULL_MESSAGE,
+        LOGGER_ERR_NULL_ENTRY,
         LOGGER_ERR_INVALID_INDEX
     } LoggerStatus;
 
@@ -29,10 +31,20 @@
         char message[LOGGER_MESSAGE_MAX];
     } LogEntry;
 
+    /*
+     * Logger state and storage.
+     *
+     * The Logger object is caller-owned and may be allocated in static, stack, or other 
+     * caller-managed memory. The structure is publicly defined to keep allocation simple 
+     * and deterministic for embedded-style use.
+     * 
+     * The members of this structure are internal implementation state. Callers must not modify 
+     * any fields directly after initialization. Use the public logger API for all normal interaction.
+     */
     typedef struct {
         LogEntry entries[LOGGER_CAPACITY];
-        size_t head;
-        size_t tail;
+        uint32_t head;
+        uint32_t tail;
     } Logger;
 
 

@@ -42,6 +42,20 @@ Maintains the internal state of the logger.
 
 ---
 
+### Logger Object Ownership and Visibility
+
+`Logger` is caller-owned and allocated in caller-managed memory.
+
+The structure is publicly defined to support simple, deterministic allocation in
+embedded-style environments without dynamic memory allocation. 
+
+Although the structure is visible in the public header, its members are internal 
+implementation state. Callers must not modify `head`, `tail`, or entry storage directly 
+after initialization. All normal interaction with the logger must occur through
+the public API.
+
+---
+
 ## Logical and Physical Indexing
 
 The logger uses **free-running logical counters** (`head`, `tail`) to track orderings.
