@@ -237,8 +237,8 @@ static void test_loggerGetCount_null_count_returns_error(void) {
 }
 
 /* ---------------------------------------------------------------------------*
-*  MC/DC Analysis: loggerAppend                                               *
-*  Decision: (logger == NULL) || (message == NULL) || (level is invalid)      *
+* MC/DC Analysis: loggerAppend                                                *
+* Decision: (logger == NULL) || (message == NULL) || (level is invalid)       *
 *                                                                             *
 * 1. [Baseline/Functional]:                                                   *
 *       test_loggerAppend_valid_returns_ok             (F, F, F)              *
@@ -398,16 +398,17 @@ static void test_loggerAppend_level_too_high_returns_error(void) {
 }
 
 /* ---------------------------------------------------------------------------*
-*  MC/DC Analysis: loggerGetEntry                                             *
-*  Decision: (logger is NULL || indices are invalid || outEntry is NULL)      *
+* MC/DC Analysis: loggerGetEntry                                              *
+* Decision: (logger is NULL || indices are invalid || outEntry is NULL)       *
 *                                                                             *
-*  1. [Baseline]:                                                             *
+* 1. [Baseline]:                                                              *
 *       test_loggerGetEntry_valid_returns_ok              (F, F, F)           *
-*  2. [Pair A] (logger):                                                      *
+* 2. [Pair A] (logger):                                                       *
 *       test_loggerGetEntry_null_logger_returns_error     (T, F, F) vs #1     *
-*  3. [Pair B] (indices):                                                     *
-*       test_loggerGetEntry_invalid_indices_returns_error (F, T, F) vs #1     *
-*  4. [Pair C] (outEntry):                                                    *
+* 3. [Pair B] (indices):                                  (F, T, F) vs #1     *
+*    a. test_loggerGetEntry_index_too_old_returns_error   (index < tail)      *
+*    b. test_loggerGetEntry_index_too_new_returns_error   (index >= head)     *
+* 4. [Pair C] (outEntry):                                                     *
 *       test_loggerGetEntry_null_outEntry_returns_error   (F, F, T) vs #1     *
 * --------------------------------------------------------------------------- */
 
@@ -459,23 +460,49 @@ static void test_loggerGetEntry_null_logger_returns_error(void) {
 }
 
 /*
-* 3. loggerGetEntry [MC/DC Pair B] (False, True, False Case)
+* 3a. loggerGetEntry [MC/DC Pair B-1] (False, True, False Case)
 *
 * Tests that loggerGetEntry:
 * - returns a LOGGER_ERR_INVALID_INDEX error when 
-*   passed an index that is out of bounds
+*   passed an index that is out of bounds (index >= head)
 */
-static void test_loggerGetEntry_invalid_indices_returns_error(void) {
+static void test_loggerGetEntry_index_too_new_returns_error(void) {
     // Arrange: Initialize logger and add a known entry to ensure it's not empty
     Logger logger = {0}; // Start with an empty logger
     loggerAppend(&logger, 1234567890U, LOG_LEVEL_INFO, "Test message");
-    u_int32_t invalidIndex = 3U; // Set to an index that is out of bounds
+    uint32_t invalidIndex = 3U; // Set to an index that is out of bounds
 
     // Act: Call loggerGetEntry with an invalid index 
     //      (only index 0 is valid since we added one entry)
     LogEntry retrievedEntry;
     LoggerStatus status = 
         loggerGetEntry(&logger, invalidIndex, &retrievedEntry);
+
+    // Assert: Should return LOGGER_ERR_INVALID_INDEX error
+    ASSERT_EQUAL(LOGGER_ERR_INVALID_INDEX, status);
+}
+
+/*
+* 3b. loggerGetEntry [MC/DC Pair B-2] (False, True, False Case)
+*
+* Tests that loggerGetEntry:
+* - returns a LOGGER_ERR_INVALID_INDEX error when 
+*   passed an index that is out of bounds (index < tail)
+*/
+static void test_loggerGetEntry_index_too_old_returns_error(void) {
+    // Arrange: Initialize logger and force an overwrite state
+    Logger logger = {0};
+
+    // Set head and tail to simulate a state where index 0 is valid 
+    // but index 1 is too old. Valid range: [2, 4]
+    logger.tail = 2U;
+    logger.head = 5U;
+    uint32_t invalidIndex = 1U;
+    LogEntry outEntry;
+
+    // Act: Call loggerGetEntry with an invalid index that is too old (< tail)
+    LoggerStatus status = 
+        loggerGetEntry(&logger, invalidIndex, &outEntry);
 
     // Assert: Should return LOGGER_ERR_INVALID_INDEX error
     ASSERT_EQUAL(LOGGER_ERR_INVALID_INDEX, status);
@@ -565,7 +592,8 @@ int main(void) {
     // loggerGetEntry
     RUN_TEST(test_loggerGetEntry_valid_returns_ok);
     RUN_TEST(test_loggerGetEntry_null_logger_returns_error);
-    RUN_TEST(test_loggerGetEntry_invalid_indices_returns_error);
+    RUN_TEST(test_loggerGetEntry_index_too_new_returns_error);
+    RUN_TEST(test_loggerGetEntry_index_too_old_returns_error);
     RUN_TEST(test_loggerGetEntry_null_outEntry_returns_error);
 
     /** Functional Tests **/
