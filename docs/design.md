@@ -2,7 +2,9 @@
 
 ## Scope
 
-This document describes the internal design and behavior of the diagnostic logger, including data structures, indexing strategy, invariants, and implementation considerations.
+This document describes the internal design and behavior of the 
+diagnostic logger, including data structures, indexing strategy, invariants, 
+and implementation considerations.
 
 It is intended for developers modifying or extending the module.
 
@@ -50,18 +52,19 @@ The structure is publicly defined to support simple, deterministic allocation in
 embedded-style environments without dynamic memory allocation. 
 
 Although the structure is visible in the public header, its members are internal 
-implementation state. Callers must not modify `head`, `tail`, or entry storage directly 
-after initialization. All normal interaction with the logger must occur through
-the public API.
+implementation state. Callers must not modify `head`, `tail`, or entry storage 
+directly after initialization. All normal interaction with the logger must occur 
+through the public API.
 
 ---
 
 ## Logical and Physical Indexing
 
-The logger uses **free-running logical counters** (`head`, `tail`) to track orderings.
-These counters are not bounded by the buffer size.
+The logger uses **free-running logical counters** (`head`, `tail`) to track 
+orderings. These counters are not bounded by the buffer size.
 
-To access the underlying array, logical positions are converted into physical indices:
+To access the underlying array, logical positions are 
+converted into physical indices:
 
 ```c
 physical_index = logical_index & (LOGGER_CAPACITY - 1);
@@ -135,7 +138,8 @@ To retrieve an entry:
 
 ### Index Mapping
 
-The `index` parameter represents the logical position relative to the oldest entry:
+The `index` parameter represents the logical position 
+relative to the oldest entry:
 
 * `index = 0` → oldest entry
 * `index = count - 1` → newest entry
@@ -196,7 +200,8 @@ cc -std=c11 -Wall -Wextra -Wpedantic -Werror \
 * Single-threaded usage
 * Buffer capacity must be power of two (for efficient index masking)
 * Logical counters (`head`, `tail`) use unsigned integer wraparound semantics
-* Counter type must satisfy: `capacity < (max_value_of_counter / 2)` to ensure modular subtraction remains unambiguous
+* Counter type must satisfy: `capacity < (max_value_of_counter / 2)` 
+  to ensure modular subtraction remains unambiguous
 * Invariant must always hold: `head - tail <= capacity`
 
 ---

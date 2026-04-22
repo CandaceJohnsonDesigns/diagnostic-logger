@@ -4,7 +4,8 @@
 
 This document outlines the testing approach for the diagnostic logger.
 
-Testing is performed using a simple C test harness and focuses on correctness, safety, and adherence to the defined API contract.
+Testing is performed using a simple C test harness and focuses on correctness, 
+safety, and adherence to the defined API contract.
 
 ---
 
