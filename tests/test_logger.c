@@ -348,7 +348,7 @@ static void test_loggerAppend_null_message_returns_error(void) {
 *
 * Independence: logger is valid (F), message is valid (F), level is invalid (T)
 */
-static void test_loggerAppend_level_two_low_returns_error(void) {
+static void test_loggerAppend_level_too_low_returns_error(void) {
     // Arrange: Initialize logger and set up valid parameters except level
     Logger logger = {0}; // Start with an empty logger
     uint32_t timestamp = 1234567890U;
@@ -556,7 +556,7 @@ int main(void) {
     RUN_TEST(test_loggerAppend_valid_returns_ok);
     RUN_TEST(test_loggerAppend_null_logger_returns_error);
     RUN_TEST(test_loggerAppend_null_message_returns_error);
-    RUN_TEST(test_loggerAppend_level_two_low_returns_error);
+    RUN_TEST(test_loggerAppend_level_too_low_returns_error);
     RUN_TEST(test_loggerAppend_level_too_high_returns_error);
 
     printf
