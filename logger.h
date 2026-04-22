@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #define LOGGER_MESSAGE_MAX 64U
 #define LOGGER_CAPACITY 16U
@@ -18,7 +19,8 @@ typedef enum {
     LOG_LEVEL_DEBUG,
     LOG_LEVEL_INFO,
     LOG_LEVEL_WARNING,
-    LOG_LEVEL_ERROR
+    LOG_LEVEL_ERROR,
+    LOG_LEVEL_COUNT // Not a valid log level, used for bounds checking
 } LogLevel;
 
 typedef enum {
@@ -54,7 +56,7 @@ typedef struct {
 } Logger;
 
 
-// Function Prototypes
+/* Function Prototypes */
 
 LoggerStatus loggerInit(Logger *logger);
 
@@ -74,5 +76,11 @@ LoggerStatus loggerGetEntry(
 LoggerStatus loggerGetCount(const Logger *logger, size_t *outCount);
 
 LoggerStatus loggerClear(Logger *logger);
+
+// Helper Functions
+
+bool loggerIsFull(const Logger *logger);
+
+bool loggerIsValidLevel(int level);
 
 #endif // LOGGER_H

@@ -114,6 +114,8 @@ LoggerStatus loggerAppend(
         status = LOGGER_ERR_NULL_LOGGER;
     } else if (message == NULL) {
         status = LOGGER_ERR_NULL_MESSAGE;
+    } else if (loggerIsValidLevel(level)) {
+        status = LOGGER_ERR_INVALID_LEVEL;
     } else {
 
         LogEntry entry;
@@ -140,4 +142,12 @@ LoggerStatus loggerAppend(
     }
 
     return status;
+}
+
+/*
+* Check if a log level is valid
+* - Return true if the level is a valid LogLevel, false otherwise
+*/
+bool loggerIsValidLevel(int level) {
+    return level >= 0U && level < LOG_LEVEL_COUNT;
 }

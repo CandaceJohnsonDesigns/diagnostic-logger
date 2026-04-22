@@ -237,19 +237,59 @@ static void test_loggerGetCount_null_count_returns_error(void) {
 }
 
 /* ---------------------------------------------------------------------------*
-*  MC/DC Analysis: loggerAppend                                             *
-*  Decision: (logger == NULL) || (message == NULL)                           *
+*  MC/DC Analysis: loggerAppend                                               *
+*  Decision: (logger == NULL) || (message == NULL) || (level is invalid)      *
 *                                                                             *
 * 1. [Baseline/Functional]:                                                   *
-*       test_loggerAppend_valid_returns_ok            (F, F)                *
+*       test_loggerAppend_valid_returns_ok            (F, F, F)               *
 * 2. [Pair A] (logger):                                                       *
-*       test_loggerAppend_null_logger_returns_error   (T, X) vs #1          *
-* 3. [Pair B] (message):                                                     *
-*       test_loggerAppend_null_count_returns_error    (F, T) vs #1          *
+*       test_loggerAppend_null_logger_returns_error   (T, X, X) vs #1         *
+* 3. [Pair B] (message):                                                      *
+*       test_loggerAppend_null_count_returns_error    (F, T, X) vs #1         *
+* 4. [Pair C] (level):                                                        *
+*       test_loggerAppend_invalid_level_returns_error (F, F, T) vs #1         *
 * --------------------------------------------------------------------------- */
 
 /*
-* 2. loggerAppend [MC/DC Independence Pair A] (True, X Case)
+* 1. loggerAppend [MC/DC Baseline] (False, False, False Case)
+*
+* Tests that loggerAppend:
+* - returns LOGGER_OK status
+* - appends the log entry to the logger's ring buffer
+* - updates the head index correctly
+*/
+static void test_loggerAppend_valid_returns_ok(void) {
+    // Arrange: Initialize logger and set up valid parameters
+    Logger logger = {0}; // Start with an empty logger
+    LogLevel level = LOG_LEVEL_WARNING;
+    uint32_t timestamp = 1234567890U;
+    const char *message = "Valid log entry";
+
+    // Act: (logger == NULL) is FALSE, (message == NULL) is FALSE, 
+    // and level is valid
+    LoggerStatus status = 
+        loggerAppend(&logger, timestamp, level, message);
+
+    // Assert: Should return LOGGER_OK status
+    ASSERT_EQUAL(LOGGER_OK, status);
+
+    // Side-Effect Checks: 
+
+    // Verify that the entry was appended correctly (count should be 1)
+    size_t count;
+    loggerGetCount(&logger, &count);
+    ASSERT_EQUAL(1U, count);
+
+    // Verify that the log entry was stored correctly
+    LogEntry retrievedEntry;
+    loggerGetEntry(&logger, 0U, &retrievedEntry);
+    ASSERT_EQUAL(timestamp, retrievedEntry.timestamp);
+    ASSERT_EQUAL(level, retrievedEntry.level); 
+    ASSERT_TRUE(strcmp(message, retrievedEntry.message) == 0);
+}
+
+/*
+* 2. loggerAppend [MC/DC Independence Pair A] (True, X, X) Case
 *
 * Tests that loggerAppend: 
 * - returns a LOGGER_ERR_NULL_LOGGER error when passed a NULL Logger pointer
@@ -257,7 +297,7 @@ static void test_loggerGetCount_null_count_returns_error(void) {
 static void test_loggerAppend_null_logger_returns_error(void) {
     // Arrange: Set up valid parameters for loggerAppend
     LogLevel level = LOG_LEVEL_INFO;
-    uint32_t timestamp = 1234567890;
+    uint32_t timestamp = 1234567890U;
     const char *message = "Test message";
 
     // Act: Call loggerAppend with a NULL Logger pointer
@@ -271,6 +311,58 @@ static void test_loggerAppend_null_logger_returns_error(void) {
     ASSERT_EQUAL(LOG_LEVEL_INFO, level);
     ASSERT_EQUAL(1234567890U, timestamp); 
     ASSERT_TRUE(strcmp(message, "Test message") == 0); 
+}
+
+/*
+* 3. loggerAppend [MC/DC Independence Pair B] (X, True, X) Case
+*
+* Tests that loggerAppend:
+* - returns a LOGGER_ERR_NULL_MESSAGE error when passed a NULL message pointer
+*/
+static void test_loggerAppend_null_message_returns_error(void) {
+    // Arrange: Initialize logger and set up valid parameters except message
+    Logger logger = {0}; // Start with an empty logger
+    LogLevel level = LOG_LEVEL_ERROR;
+    uint32_t timestamp = 1234567890U;
+    const char *message = NULL; // Set message to NULL to trigger the error
+
+    // Act: Call loggerAppend with a NULL message pointer
+    LoggerStatus status = 
+        loggerAppend(&logger, timestamp, level, message);
+
+    // Assert: Should return LOGGER_ERR_NULL_MESSAGE error
+    ASSERT_EQUAL(LOGGER_ERR_NULL_MESSAGE, status);
+
+    // Side-Effect Check: Ensure that input parameters are unchanged on error
+    ASSERT_EQUAL(LOG_LEVEL_ERROR, level);
+    ASSERT_EQUAL(1234567890U, timestamp);
+    ASSERT_TRUE(message == NULL);
+}
+
+/*
+* 4. loggerAppend [MC/DC Independence Pair C] (X, X, True) Case
+*
+* Tests that loggerAppend:
+* - returns a LOGGER_ERR_INVALID_LEVEL error when passed an invalid log level
+*/
+static void test_loggerAppend_invalid_level_returns_error(void) {
+    // Arrange: Initialize logger and set up valid parameters except level
+    Logger logger = {0}; // Start with an empty logger
+    uint32_t timestamp = 1234567890U;
+    const char *message = "Test message";
+    LogLevel invalidLevel = LOG_LEVEL_COUNT; // Set to an invalid level
+
+    // Act: Call loggerAppend with an invalid log level
+    LoggerStatus status = 
+        loggerAppend(&logger, timestamp, invalidLevel, message);
+    
+    // Assert: Should return LOGGER_ERR_INVALID_LEVEL error
+    ASSERT_EQUAL(LOGGER_ERR_INVALID_LEVEL, status);
+
+    // Side-Effect Check: Ensure that input parameters are unchanged on error
+    ASSERT_EQUAL(1234567890U, timestamp);
+    ASSERT_TRUE(strcmp(message, "Test message") == 0);
+    ASSERT_EQUAL(LOG_LEVEL_COUNT, invalidLevel);
 }
 
 /******************************************************************************
@@ -317,7 +409,11 @@ int main(void) {
     RUN_TEST(test_loggerGetCount_null_count_returns_error);
 
     // loggerAppend
+    RUN_TEST(test_loggerAppend_valid_returns_ok);
     RUN_TEST(test_loggerAppend_null_logger_returns_error);
+    RUN_TEST(test_loggerAppend_null_message_returns_error);
+    RUN_TEST(test_loggerAppend_invalid_level_returns_error);
+
 
     /** Functional Tests **/
     RUN_TEST(test_loggerGetCount_after_init_returns_zero);
