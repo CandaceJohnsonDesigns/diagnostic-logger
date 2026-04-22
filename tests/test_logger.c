@@ -30,8 +30,8 @@ static int testsFailed = 0;
     do {                                                                      \
         if (!(condition)) {                                                   \
             printf(                                                           \
-                "Assertion failed: %s, in function %s, file %s, line %d\n",   \
-                #condition, __func__, __FILE__, __LINE__);                    \
+                "Assertion failed: %s, in file %s, line %d\n",                \
+                #condition, __FILE__, __LINE__);                              \
             testsFailed++;                                                    \
             return;                                                           \
         }                                                                     \
@@ -48,9 +48,9 @@ static int testsFailed = 0;
     do {                                                                \
         if ((expected) != (actual)) {                                   \
             printf("Equality failed: expected %lld, got %lld,           \
-                in function %s, file %s, line %d\n",                    \
+                in file %s, line %d\n",                                 \
                 (long long)(expected), (long long)(actual),             \
-                __func__, __FILE__, __LINE__);                          \
+                __FILE__, __LINE__);                                    \
             testsFailed++;                                              \
             return;                                                     \
         }                                                               \
@@ -166,7 +166,7 @@ static void test_loggerClear_null_logger_returns_error(void) {
 * 1. [Baseline/Functional]:                                                   *
 *       test_loggerGetCount_valid_returns_ok            (F, F)                *
 * 2. [Pair A] (logger):                                                       *
-*       test_loggerGetCount_null_logger_returns_error   (T, X) vs #1          *
+*       test_loggerGetCount_null_logger_returns_error   (T, F) vs #1          *
 * 3. [Pair B] (outCount):                                                     *
 *       test_loggerGetCount_null_count_returns_error    (F, T) vs #1          *
 * --------------------------------------------------------------------------- */
@@ -183,7 +183,7 @@ static void test_loggerGetCount_valid_returns_ok(void) {
     // Arrange: Initialize with known state;
     /* Head and tail values are not reflective of 
        capacity and ring buffer constraints at this point */
-    size_t count = 0U;
+    size_t count = 0;
     uint32_t head = 7U;
     uint32_t tail = 2U;
     Logger logger = { .head = head, .tail = tail };
@@ -197,7 +197,7 @@ static void test_loggerGetCount_valid_returns_ok(void) {
 }
 
 /*
-* 2. loggerGetCount [MC/DC Independence Pair A] (True, X Case)
+* 2. loggerGetCount [MC/DC Independence Pair A] (True, False Case)
 *
 * Test that loggerGetCount:
 * - returns LOGGER_ERR_NULL_LOGGER error when passed a NULL Logger pointer
@@ -241,13 +241,14 @@ static void test_loggerGetCount_null_count_returns_error(void) {
 *  Decision: (logger == NULL) || (message == NULL) || (level is invalid)      *
 *                                                                             *
 * 1. [Baseline/Functional]:                                                   *
-*       test_loggerAppend_valid_returns_ok            (F, F, F)               *
+*       test_loggerAppend_valid_returns_ok             (F, F, F)              *
 * 2. [Pair A] (logger):                                                       *
-*       test_loggerAppend_null_logger_returns_error   (T, X, X) vs #1         *
+*       test_loggerAppend_null_logger_returns_error    (T, F, F) vs #1        *
 * 3. [Pair B] (message):                                                      *
-*       test_loggerAppend_null_count_returns_error    (F, T, X) vs #1         *
-* 4. [Pair C] (level):                                                        *
-*       test_loggerAppend_invalid_level_returns_error (F, F, T) vs #1         *
+*       test_loggerAppend_null_message_returns_error   (F, T, F) vs #1        *
+* 4. [Pair C] (level):                                 (F, F, T) vs #1        *
+*    a. test_loggerAppend_level_too_low_returns_error    (level < 0)          *
+*    b. test_loggerAppend_level_too_high_returns_error   (level >= COUNT)     *
 * --------------------------------------------------------------------------- */
 
 /*
@@ -266,7 +267,7 @@ static void test_loggerAppend_valid_returns_ok(void) {
     const char *message = "Valid log entry";
 
     // Act: (logger == NULL) is FALSE, (message == NULL) is FALSE, 
-    // and level is valid
+    // and level is invalid
     LoggerStatus status = 
         loggerAppend(&logger, timestamp, level, message);
 
@@ -289,7 +290,7 @@ static void test_loggerAppend_valid_returns_ok(void) {
 }
 
 /*
-* 2. loggerAppend [MC/DC Independence Pair A] (True, X, X) Case
+* 2. loggerAppend [MC/DC Independence Pair A] (True, False, False Case)
 *
 * Tests that loggerAppend: 
 * - returns a LOGGER_ERR_NULL_LOGGER error when passed a NULL Logger pointer
@@ -314,7 +315,7 @@ static void test_loggerAppend_null_logger_returns_error(void) {
 }
 
 /*
-* 3. loggerAppend [MC/DC Independence Pair B] (X, True, X) Case
+* 3. loggerAppend [MC/DC Independence Pair B] (False, True, False Case)
 *
 * Tests that loggerAppend:
 * - returns a LOGGER_ERR_NULL_MESSAGE error when passed a NULL message pointer
@@ -340,17 +341,19 @@ static void test_loggerAppend_null_message_returns_error(void) {
 }
 
 /*
-* 4. loggerAppend [MC/DC Independence Pair C] (X, X, True) Case
+* 4a. loggerAppend [MC/DC Independence Pair C-1] (False, False, True Case)
 *
 * Tests that loggerAppend:
 * - returns a LOGGER_ERR_INVALID_LEVEL error when passed an invalid log level
+*
+* Independence: logger is valid (F), message is valid (F), level is invalid (T)
 */
-static void test_loggerAppend_invalid_level_returns_error(void) {
+static void test_loggerAppend_level_two_low_returns_error(void) {
     // Arrange: Initialize logger and set up valid parameters except level
     Logger logger = {0}; // Start with an empty logger
     uint32_t timestamp = 1234567890U;
     const char *message = "Test message";
-    LogLevel invalidLevel = LOG_LEVEL_COUNT; // Set to an invalid level
+    LogLevel invalidLevel = -3; // Set to an invalid level that is too low
 
     // Act: Call loggerAppend with an invalid log level
     LoggerStatus status = 
@@ -362,8 +365,141 @@ static void test_loggerAppend_invalid_level_returns_error(void) {
     // Side-Effect Check: Ensure that input parameters are unchanged on error
     ASSERT_EQUAL(1234567890U, timestamp);
     ASSERT_TRUE(strcmp(message, "Test message") == 0);
-    ASSERT_EQUAL(LOG_LEVEL_COUNT, invalidLevel);
+    ASSERT_EQUAL(-3, (int)invalidLevel);
 }
+
+/*
+* 4b. loggerAppend [MC/DC Independence Pair C-2] (False, False, True Case)
+*
+* Tests that loggerAppend:
+* - returns a LOGGER_ERR_INVALID_LEVEL error when passed an invalid log level
+*
+* Independence: logger is valid (F), message is valid (F), level is invalid (T)
+*/
+static void test_loggerAppend_level_too_high_returns_error(void) {
+    // Arrange: Initialize logger and set up valid parameters except level
+    Logger logger = {0}; // Start with an empty logger
+    uint32_t timestamp = 1234567890U;
+    const char *message = "Test message";
+    // Set to an invalid level that is too high
+    LogLevel invalidLevel = LOG_LEVEL_COUNT;
+
+    // Act: Call loggerAppend with an invalid log level
+    LoggerStatus status = 
+        loggerAppend(&logger, timestamp, invalidLevel, message);
+    
+    // Assert: Should return LOGGER_ERR_INVALID_LEVEL error
+    ASSERT_EQUAL(LOGGER_ERR_INVALID_LEVEL, status);
+
+    // Side-Effect Check: Ensure that input parameters are unchanged on error
+    ASSERT_EQUAL(1234567890U, timestamp);
+    ASSERT_TRUE(strcmp(message, "Test message") == 0);
+    ASSERT_EQUAL(LOG_LEVEL_COUNT, (int)invalidLevel);
+}
+
+/* ---------------------------------------------------------------------------*
+*  MC/DC Analysis: loggerGetEntry                                             *
+*  Decision: (logger is NULL || indices are invalid || outEntry is NULL)      *
+*                                                                             *
+*  1. [Baseline]:                                                             *
+*       test_loggerGetEntry_valid_returns_ok              (F, F, F)           *
+*  2. [Pair A] (logger):                                                      *
+*       test_loggerGetEntry_null_logger_returns_error     (T, F, F) vs #1     *
+*  3. [Pair B] (indices):                                                     *
+*       test_loggerGetEntry_invalid_indices_returns_error (F, T, F) vs #1     *
+*  4. [Pair C] (outEntry):                                                    *
+*       test_loggerGetEntry_null_outEntry_returns_error   (F, F, T) vs #1     *
+* --------------------------------------------------------------------------- */
+
+/*
+* 1. loggerGetEntry [MC/DC Baseline] (False, False, False Case)
+*
+* Tests that loggerGetEntry:
+* - returns LOGGER_OK status
+* - retrieves the correct log entry for a valid index
+*/
+static void test_loggerGetEntry_valid_returns_ok(void) {
+    // Arrange: Initialize logger and add a known entry
+    Logger logger = {0}; // Start with an empty logger
+    uint32_t timestamp = 1234567890U;
+    LogLevel level = LOG_LEVEL_DEBUG;
+    const char *message = "Test message";
+    loggerAppend(&logger, timestamp, level, message);
+
+    // Act: Call loggerGetEntry with a valid index (0)
+    LogEntry retrievedEntry;
+    LoggerStatus status = loggerGetEntry(&logger, 0U, &retrievedEntry);
+
+    // Assert: Should return LOGGER_OK status
+    ASSERT_EQUAL(LOGGER_OK, status);
+
+    // Verify that the retrieved entry matches the one that was appended
+    ASSERT_EQUAL(timestamp, retrievedEntry.timestamp);
+    ASSERT_EQUAL(level, retrievedEntry.level);
+    ASSERT_TRUE(strcmp(message, retrievedEntry.message) == 0);
+}
+
+/*
+* 2. loggerGetEntry [MC/DC Independence Pair A] (True, False, False Case)
+*
+* Tests that loggerGetEntry: 
+* - returns a LOGGER_ERR_NULL_LOGGER error when passed a NULL Logger pointer
+*/
+static void test_loggerGetEntry_null_logger_returns_error(void) {
+    // Arrange: Set up valid parameters for loggerGetEntry except logger
+    size_t index = 0U;
+    LogEntry outEntry;
+    Logger *nullLogger = NULL;
+
+    // Act: Call loggerGetEntry with a NULL logger pointer
+    LoggerStatus status = loggerGetEntry(nullLogger, index, &outEntry);
+
+    // Assert: Should return LOGGER_ERR_NULL_LOGGER error
+    ASSERT_EQUAL(LOGGER_ERR_NULL_LOGGER, status);
+}
+
+/*
+* 3. loggerGetEntry [MC/DC Pair B] (False, True, False Case)
+*
+* Tests that loggerGetEntry:
+* - returns a LOGGER_ERR_INVALID_INDEX error when 
+*   passed an index that is out of bounds
+*/
+static void test_loggerGetEntry_invalid_indices_returns_error(void) {
+    // Arrange: Initialize logger and add a known entry to ensure it's not empty
+    Logger logger = {0}; // Start with an empty logger
+    loggerAppend(&logger, 1234567890U, LOG_LEVEL_INFO, "Test message");
+    u_int32_t invalidIndex = 3U; // Set to an index that is out of bounds
+
+    // Act: Call loggerGetEntry with an invalid index 
+    //      (only index 0 is valid since we added one entry)
+    LogEntry retrievedEntry;
+    LoggerStatus status = 
+        loggerGetEntry(&logger, invalidIndex, &retrievedEntry);
+
+    // Assert: Should return LOGGER_ERR_INVALID_INDEX error
+    ASSERT_EQUAL(LOGGER_ERR_INVALID_INDEX, status);
+}
+
+/*
+* 4. loggerGetEntry [MC/DC Pair C] (False, False, True Case)
+*
+* Tests that loggerGetEntry:
+* - returns a LOGGER_ERR_NULL_ENTRY error when 
+*   passed a NULL pointer for the output entry
+*/
+static void test_loggerGetEntry_null_outEntry_returns_error(void) {
+    // Arrange: Initialize logger and add a known entry
+    Logger logger = {0}; // Start with an empty logger
+    loggerAppend(&logger, 1234567890U, LOG_LEVEL_INFO, "Test message");
+
+    // Act: Call loggerGetEntry with a NULL output entry pointer
+    LoggerStatus status = loggerGetEntry(&logger, 0U, NULL);
+
+    // Assert: Should return LOGGER_ERR_NULL_ENTRY error
+    ASSERT_EQUAL(LOGGER_ERR_NULL_ENTRY, status);
+}
+
 
 /******************************************************************************
 *               Functional Tests (Requirements Coverage)                      *
@@ -395,34 +531,52 @@ static void test_loggerGetCount_after_init_returns_zero(void) {
 int main(void) {
     /** MC/DC Tests **/
 
+    printf("\n");
+
     // loggerInit
     RUN_TEST(test_loggerInit_valid_returns_ok);
     RUN_TEST(test_loggerInit_null_logger_returns_error);
 
+    printf("\n");
+
     // loggerClear
     RUN_TEST(test_loggerClear_valid_returns_ok);
     RUN_TEST(test_loggerClear_null_logger_returns_error);
+
+    printf("\n");
 
     // loggerGetCount
     RUN_TEST(test_loggerGetCount_valid_returns_ok);
     RUN_TEST(test_loggerGetCount_null_logger_returns_error);
     RUN_TEST(test_loggerGetCount_null_count_returns_error);
 
+    printf("\n");
+
     // loggerAppend
     RUN_TEST(test_loggerAppend_valid_returns_ok);
     RUN_TEST(test_loggerAppend_null_logger_returns_error);
     RUN_TEST(test_loggerAppend_null_message_returns_error);
-    RUN_TEST(test_loggerAppend_invalid_level_returns_error);
+    RUN_TEST(test_loggerAppend_level_two_low_returns_error);
+    RUN_TEST(test_loggerAppend_level_too_high_returns_error);
 
+    printf
+    ("\n");
+
+    // loggerGetEntry
+    RUN_TEST(test_loggerGetEntry_valid_returns_ok);
+    RUN_TEST(test_loggerGetEntry_null_logger_returns_error);
+    RUN_TEST(test_loggerGetEntry_invalid_indices_returns_error);
+    RUN_TEST(test_loggerGetEntry_null_outEntry_returns_error);
 
     /** Functional Tests **/
     RUN_TEST(test_loggerGetCount_after_init_returns_zero);
 
-
-    printf("\n"); // Add a newline for better readability of results
+    printf("\n");
 
     printf("Tests run: %d\n", testsRun);
     printf("Tests failed: %d\n", testsFailed);
+
+    printf("\n");
 
     // Return non-zero exit code if any tests failed
     return testsFailed ? 1 : 0;
