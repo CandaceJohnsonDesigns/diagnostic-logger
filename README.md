@@ -91,11 +91,15 @@ For detailed implementation and invariants, see [docs/design.md](docs/design.md)
 ## File Structure
 
 ```
-main.c            
-logger.h          Public API and data structures
-logger.c          Implementation
-test_logger.c     Test harness
-docs/             Detailed documentation
+main.c                  Demonstration of usage (TODO)
+logger.h                Public API and data structures
+logger.c                Implementation
+tests/
+    test_logger.c       Test harness and test cases
+docs/
+    design.md           Detailed design documentation
+    api.md              API contract documentation
+    testing.md          Testing approach                    
 .gitignore        
 ```
 ---
