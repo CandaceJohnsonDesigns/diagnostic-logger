@@ -512,7 +512,7 @@ static void test_loggerGetEntry_null_outEntry_returns_error(void) {
 */
 static void test_loggerGetCount_after_init_returns_zero(void) {
     // Arrange: Initialize logger and count to a known non-zero value
-    Logger logger;
+    Logger logger = {0}; // Start with an empty logger
     size_t count = 999U;
 
     // Act

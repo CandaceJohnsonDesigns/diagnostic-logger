@@ -19,6 +19,11 @@ LoggerStatus loggerInit(Logger *logger) {
     if (logger == NULL) {
         status = LOGGER_ERR_NULL_LOGGER;
     } else {
+        // Clear all entries and reset indices
+        memset(logger, 0, sizeof(Logger));
+
+        // Explicitly set head and tail to 0 for clarity, 
+        // even though memset already does this
         logger->head = 0U;
         logger->tail = 0U;
 
