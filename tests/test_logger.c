@@ -296,9 +296,9 @@ static void test_loggerGetCount_after_init_returns_zero(void) {
     ASSERT_EQUAL(0U, count); // Initialized logger should have a count of 0
 }
 
-/*********************************
-* Main function to run all tests *
-**********************************/
+/******************************************************************************
+*                       Main function to run all tests                        *
+*******************************************************************************/
 
 int main(void) {
     /** MC/DC Tests **/
