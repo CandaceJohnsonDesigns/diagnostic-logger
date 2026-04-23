@@ -534,8 +534,9 @@ static void test_loggerGetEntry_null_outEntry_returns_error(void) {
 
 /*
 * Test that loggerGetCount:
-* - returns LOGGER_OK status
-* - sets the count pointer to 0 when called on an initialized logger
+*   - returns LOGGER_OK status
+*   - sets the count pointer to 0 
+* when called on an initialized logger
 */
 static void test_loggerGetCount_after_init_returns_zero(void) {
     // Arrange: Initialize logger and count to a known non-zero value
@@ -549,6 +550,27 @@ static void test_loggerGetCount_after_init_returns_zero(void) {
     // Assert
     ASSERT_EQUAL(LOGGER_OK, status); // Should return LOGGER_OK status
     ASSERT_EQUAL(0U, count); // Initialized logger should have a count of 0
+}
+
+/*
+* Empty logger edge case
+*
+* Test that loggerGetEntry:
+* - returns LOGGER_ERR_INVALID_INDEX
+*   when called with index 0 on an empty logger (head == tail)
+*/
+static void test_loggerGetEntry_empty_logger_returns_error(void) {
+    // Arrange: Initialize logger and set head equal to tail
+    Logger logger = {0};
+    logger.head = 0U;
+    logger.tail = 0U;
+
+    // Act: Call loggerGetEntry with index 0 on an empty logger
+    LogEntry outEntry;
+    LoggerStatus status = loggerGetEntry(&logger, 0U, &outEntry);
+
+    // Assert: Should return LOGGER_ERR_INVALID_INDEX error
+    ASSERT_EQUAL(LOGGER_ERR_INVALID_INDEX, status);
 }
 
 /******************************************************************************
@@ -598,6 +620,7 @@ int main(void) {
 
     /** Functional Tests **/
     RUN_TEST(test_loggerGetCount_after_init_returns_zero);
+    RUN_TEST(test_loggerGetEntry_empty_logger_returns_error);
 
     printf("\n");
 
